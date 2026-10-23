@@ -1,48 +1,104 @@
-/* Логіка відображення табів */
-.tab-content {
-  display: none; /* За замовчуванням приховуємо всі таблиці */
-  margin-top: 16px;
+body {
+  font-family: Arial, sans-serif;
+  margin: 20px;
 }
 
-.tab-content.active {
-  display: block; /* Відображаємо тільки ту таблицю, яка активна */
-}
-
-/* Кнопки перемикання */
-.tabs-nav {
-  display: flex;
-  gap: 8px;
+/* Таби */
+.tabs {
   margin-bottom: 12px;
 }
 
-.tab-button {
-  padding: 8px 18px;
-  font-size: 14px;
+.tab-btn {
+  padding: 8px 16px;
   cursor: pointer;
-  background-color: #e0e0e0;
-  border: 1px solid #aaa;
+  background-color: #eee;
+  border: 1px solid #ccc;
   border-radius: 4px;
+  margin-right: 4px;
 }
 
-.tab-button.active {
-  background-color: #1e88e5;
-  color: #ffffff;
-  border-color: #1565c0;
+.tab-btn.active {
+  background-color: #1976d2;
+  color: #fff;
   font-weight: bold;
 }
 
-/* Оформлення таблиць для читабельності */
+.tab-content {
+  display: none;
+}
+
+.tab-content.active {
+  display: block;
+}
+
+/* Форми */
+.form-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 15px;
+  padding: 12px;
+  background-color: #fafafa;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.form-container input,
+.form-container select,
+.form-container button {
+  padding: 6px 10px;
+  font-size: 13px;
+}
+
+/* Таблиці */
 table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 10px;
 }
 
 th, td {
-  padding: 10px 12px;
+  border: 1px solid #ccc;
+  padding: 8px 10px;
   text-align: left;
 }
 
 th {
-  background-color: #f5f5f5;
+  background-color: #f2f2f2;
+}
+
+/* Комірки доступні для редагування */
+td:not(.action-cell) {
+  cursor: pointer;
+}
+
+td:not(.action-cell):hover {
+  background-color: #f9fdf4;
+}
+
+/* Поле інлайн-редагування */
+.cell-input {
+  width: 90%;
+  padding: 4px 6px;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+/* Кнопка видалення */
+.btn-delete {
+  background-color: #e53935;
+  color: white;
+  border: none;
+  padding: 4px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.btn-delete:hover {
+  background-color: #b71c1c;
+}
+
+.action-cell {
+  text-align: center;
+  width: 50px;
 }

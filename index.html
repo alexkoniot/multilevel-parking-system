@@ -3,24 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Багатоярусна парковка - Лабораторна №2</title>
-  <style>
-    /* Мінімальні стилі для роботи перемикання та структури */
-    .tab-content { display: none; margin-top: 15px; }
-    .tab-content.active { display: block; }
-    .tab-btn.active { font-weight: bold; }
-    .form-container { margin-bottom: 20px; padding: 10px; border: 1px solid #ccc; }
-    .form-group { display: inline-block; margin-right: 10px; margin-bottom: 8px; }
-    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-    th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-    th { background-color: #f2f2f2; }
-  </style>
+  <title>Багатоярусна парковка - Завдання №3</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
   <h1>Система обліку «Багатоярусна парковка»</h1>
 
-  <!-- Кнопки перемикання табів -->
+  <!-- Навігація табів -->
   <div class="tabs">
     <button class="tab-btn active" data-tab="tab-spots">Паркомісця</button>
     <button class="tab-btn" data-tab="tab-vehicles">Автомобілі</button>
@@ -31,29 +21,23 @@
   <div id="tab-spots" class="tab-content active">
     <h3>Додати нове паркомісце</h3>
     <form id="form-spots" class="form-container">
-      <div class="form-group"><input type="text" id="spot-number" placeholder="Номер (A-101)" required></div>
-      <div class="form-group"><input type="number" id="spot-floor" placeholder="Поверх" min="1" max="10" required></div>
-      <div class="form-group">
-        <select id="spot-type" required>
-          <option value="Легковий">Легковий</option>
-          <option value="Електро">Електро</option>
-          <option value="SUV / Позашляховик">SUV</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <select id="spot-status">
-          <option value="Вільне">Вільне</option>
-          <option value="Зайняте">Зайняте</option>
-        </select>
-      </div>
-      <div class="form-group"><input type="number" id="spot-rate" placeholder="Тариф (грн/год)" required></div>
-      <div class="form-group">
-        <select id="spot-charger">
-          <option value="Так">Зарядка: Так</option>
-          <option value="Ні">Зарядка: Ні</option>
-        </select>
-      </div>
-      <div class="form-group"><input type="text" id="spot-sector" placeholder="Сектор (A, B...)" required></div>
+      <input type="text" id="spot-number" placeholder="Номер (напр. A-101)" required>
+      <input type="number" id="spot-floor" placeholder="Поверх (1-10)" min="1" max="10" required>
+      <select id="spot-type" required>
+        <option value="Легковий">Легковий</option>
+        <option value="Електро">Електро</option>
+        <option value="SUV">SUV</option>
+      </select>
+      <select id="spot-status">
+        <option value="Вільне">Вільне</option>
+        <option value="Зайняте">Зайняте</option>
+      </select>
+      <input type="number" id="spot-rate" placeholder="Тариф (грн/год)" required>
+      <select id="spot-charger">
+        <option value="Так">Зарядка: Так</option>
+        <option value="Ні">Зарядка: Ні</option>
+      </select>
+      <input type="text" id="spot-sector" placeholder="Сектор (A, B...)" required>
       <button type="submit">Додати місце</button>
     </form>
 
@@ -64,9 +48,10 @@
           <th>Поверх</th>
           <th>Тип місця</th>
           <th>Статус</th>
-          <th>Тариф (грн/год)</th>
-          <th>Зарядна станція</th>
+          <th>Тариф (грн)</th>
+          <th>Зарядка</th>
           <th>Сектор</th>
+          <th>Дії</th>
         </tr>
       </thead>
       <tbody>
@@ -78,6 +63,17 @@
           <td>60</td>
           <td>Так</td>
           <td>A</td>
+          <td class="action-cell"><button class="btn-delete" title="Видалити">✕</button></td>
+        </tr>
+        <tr>
+          <td>B-205</td>
+          <td>2</td>
+          <td>Легковий</td>
+          <td>Вільне</td>
+          <td>40</td>
+          <td>Ні</td>
+          <td>B</td>
+          <td class="action-cell"><button class="btn-delete" title="Видалити">✕</button></td>
         </tr>
       </tbody>
     </table>
@@ -87,13 +83,13 @@
   <div id="tab-vehicles" class="tab-content">
     <h3>Додати автомобіль</h3>
     <form id="form-vehicles" class="form-container">
-      <div class="form-group"><input type="text" id="veh-plate" placeholder="Держномер (AA1111BB)" required></div>
-      <div class="form-group"><input type="text" id="veh-brand" placeholder="Марка" required></div>
-      <div class="form-group"><input type="text" id="veh-model" placeholder="Модель" required></div>
-      <div class="form-group"><input type="text" id="veh-color" placeholder="Колір" required></div>
-      <div class="form-group"><input type="text" id="veh-owner" placeholder="ПІБ водія" required></div>
-      <div class="form-group"><input type="tel" id="veh-phone" placeholder="Телефон" required></div>
-      <div class="form-group"><input type="time" id="veh-time" required></div>
+      <input type="text" id="veh-plate" placeholder="Держномер (AA 1234 BB)" required>
+      <input type="text" id="veh-brand" placeholder="Марка" required>
+      <input type="text" id="veh-model" placeholder="Модель" required>
+      <input type="text" id="veh-color" placeholder="Колір" required>
+      <input type="text" id="veh-owner" placeholder="ПІБ водія" required>
+      <input type="tel" id="veh-phone" placeholder="Телефон" required>
+      <input type="time" id="veh-time" required>
       <button type="submit">Додати авто</button>
     </form>
 
@@ -107,6 +103,7 @@
           <th>ПІБ водія</th>
           <th>Телефон</th>
           <th>Час заїзду</th>
+          <th>Дії</th>
         </tr>
       </thead>
       <tbody>
@@ -118,6 +115,17 @@
           <td>Коваль О. В.</td>
           <td>+380671112233</td>
           <td>08:30</td>
+          <td class="action-cell"><button class="btn-delete" title="Видалити">✕</button></td>
+        </tr>
+        <tr>
+          <td>BC 5544 AI</td>
+          <td>Toyota</td>
+          <td>RAV4</td>
+          <td>Сірий</td>
+          <td>Мельник Д. І.</td>
+          <td>+380502223344</td>
+          <td>09:15</td>
+          <td class="action-cell"><button class="btn-delete" title="Видалити">✕</button></td>
         </tr>
       </tbody>
     </table>
@@ -127,18 +135,16 @@
   <div id="tab-sessions" class="tab-content">
     <h3>Додати паркувальну сесію</h3>
     <form id="form-sessions" class="form-container">
-      <div class="form-group"><input type="text" id="ses-id" placeholder="ID сесії (S-101)" required></div>
-      <div class="form-group"><input type="text" id="ses-spot" placeholder="Номер місця" required></div>
-      <div class="form-group"><input type="text" id="ses-plate" placeholder="Держномер" required></div>
-      <div class="form-group"><input type="time" id="ses-start" required></div>
-      <div class="form-group"><input type="time" id="ses-end" required></div>
-      <div class="form-group"><input type="number" id="ses-cost" placeholder="Вартість (грн)" required></div>
-      <div class="form-group">
-        <select id="ses-status">
-          <option value="Оплачено">Оплачено</option>
-          <option value="Очікує оплати">Очікує оплати</option>
-        </select>
-      </div>
+      <input type="text" id="ses-id" placeholder="ID сесії (S-101)" required>
+      <input type="text" id="ses-spot" placeholder="Номер місця" required>
+      <input type="text" id="ses-plate" placeholder="Держномер" required>
+      <input type="time" id="ses-start" required>
+      <input type="time" id="ses-end" required>
+      <input type="number" id="ses-cost" placeholder="Вартість (грн)" required>
+      <select id="ses-status">
+        <option value="Оплачено">Оплачено</option>
+        <option value="Очікує оплати">Очікує оплати</option>
+      </select>
       <button type="submit">Додати сесію</button>
     </form>
 
@@ -152,6 +158,7 @@
           <th>Завершення</th>
           <th>Сума (грн)</th>
           <th>Статус оплати</th>
+          <th>Дії</th>
         </tr>
       </thead>
       <tbody>
@@ -163,6 +170,7 @@
           <td>11:30</td>
           <td>180</td>
           <td>Оплачено</td>
+          <td class="action-cell"><button class="btn-delete" title="Видалити">✕</button></td>
         </tr>
       </tbody>
     </table>
