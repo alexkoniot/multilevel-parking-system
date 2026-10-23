@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Лабораторна робота №1: Багатоярусна парковка</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <h1>Система обліку: Багатоярусна автопарковка</h1>
+
+  <!-- Панель табів -->
+  <div class="tabs-nav">
+    <button class="tab-button active" data-tab="spots">Паркомісця</button>
+    <button class="tab-button" data-tab="vehicles">Транспортні засоби</button>
+    <button class="tab-button" data-tab="sessions">Паркувальні сесії</button>
+  </div>
+
+  <!-- Таблиця 1: Паркувальні місця -->
+  <section id="spots" class="tab-content active">
+    <h2>Реєстр паркувальних місць</h2>
+    <table border="1">
+      <thead>
+        <tr>
+          <th>Код місця</th>
+          <th>Ярус (поверх)</th>
+          <th>Категорія</th>
+          <th>EV-зарядка</th>
+          <th>Крите місце</th>
+          <th>Тариф (грн/год)</th>
+          <th>Статус</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>A-101</td>
+          <td>1 поверх</td>
+          <td>Для осіб з інвалідністю</td>
+          <td>Ні</td>
+          <td>Так</td>
+          <td>40</td>
+          <td>Вільне</td>
+        </tr>
+        <tr>
+          <td>A-102</td>
+          <td>1 поверх</td>
+          <td>Електромобілі</td>
+          <td>Так (22 кВт)</td>
+          <td>Так</td>
+          <td>80</td>
+          <td>Зайняте</td>
+        </tr>
+        <tr>
+          <td>B-205</td>
+          <td>2 поверх</td>
+          <td>Стандартне</td>
+          <td>Ні</td>
+          <td>Так</td>
+          <td>50</td>
+          <td>Вільне</td>
+        </tr>
+        <tr>
+          <td>C-310</td>
+          <td>3 поверх (дах)</td>
+          <td>Стандартне</td>
+          <td>Ні</td>
+          <td>Ні</td>
+          <td>35</td>
+          <td>Заброньоване</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- Таблиця 2: Транспортні засоби -->
+  <section id="vehicles" class="tab-content">
+    <h2>База зареєстрованих авто та клієнтів</h2>
+    <table border="1">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Номерний знак</th>
+          <th>Марка та модель</th>
+          <th>Тип кузова</th>
+          <th>Власник (ПІБ)</th>
+          <th>Телефон</th>
+          <th>Абонемент</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>V-001</td>
+          <td>KA 4521 BO</td>
+          <td>Toyota RAV4</td>
+          <td>Кросовер</td>
+          <td>Мельник Дмитро Ігорович</td>
+          <td>+38 (067) 123-45-67</td>
+          <td>Так</td>
+        </tr>
+        <tr>
+          <td>V-002</td>
+          <td>AA 8800 XT</td>
+          <td>Nissan Leaf</td>
+          <td>Хетчбек (EV)</td>
+          <td>Ковальчук Тетяна Андріївна</td>
+          <td>+38 (050) 987-65-43</td>
+          <td>Ні</td>
+        </tr>
+        <tr>
+          <td>V-003</td>
+          <td>BC 3312 CB</td>
+          <td>BMW 520d</td>
+          <td>Седан</td>
+          <td>Сидоренко Василь Олегович</td>
+          <td>+38 (093) 444-22-11</td>
+          <td>Так</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- Таблиця 3: Журнал сесій -->
+  <section id="sessions" class="tab-content">
+    <h2>Журнал поточних та завершених сесій</h2>
+    <table border="1">
+      <thead>
+        <tr>
+          <th>№ Талона</th>
+          <th>Номерний знак</th>
+          <th>Місце</th>
+          <th>Час заїзду</th>
+          <th>Час виїзду</th>
+          <th>До сплати (грн)</th>
+          <th>Статус оплати</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>T-8901</td>
+          <td>AA 8800 XT</td>
+          <td>A-102</td>
+          <td>2026-10-24 08:30</td>
+          <td>В процесі</td>
+          <td>160</td>
+          <td>Очікує виїзду</td>
+        </tr>
+        <tr>
+          <td>T-8902</td>
+          <td>KA 4521 BO</td>
+          <td>B-205</td>
+          <td>2026-10-24 09:15</td>
+          <td>2026-10-24 12:15</td>
+          <td>150</td>
+          <td>Сплачено (Абонемент)</td>
+        </tr>
+        <tr>
+          <td>T-8895</td>
+          <td>AI 1092 EK</td>
+          <td>C-310</td>
+          <td>2026-10-23 18:00</td>
+          <td>2026-10-24 07:00</td>
+          <td>455</td>
+          <td>Сплачено (Карта)</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <script src="script.js"></script>
+</body>
+</html>
