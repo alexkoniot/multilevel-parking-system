@@ -3,12 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Багатоярусна парковка - Завдання №3</title>
+  <title>Багатоярусна парковка - Завдання №4</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
   <h1>Система обліку «Багатоярусна парковка»</h1>
+
+  <!-- Панель статусу синхронізації -->
+  <div class="storage-info">
+    <span>Сховище: <strong>LocalStorage активовано</strong></span>
+    <span>Міжвкладочна синхронізація: <strong>Увімкнено (Live)</strong></span>
+  </div>
 
   <!-- Навігація табів -->
   <div class="tabs">
@@ -54,28 +60,7 @@
           <th>Дії</th>
         </tr>
       </thead>
-      <tbody>
-        <tr>
-          <td>A-101</td>
-          <td>1</td>
-          <td>Електро</td>
-          <td>Зайняте</td>
-          <td>60</td>
-          <td>Так</td>
-          <td>A</td>
-          <td class="action-cell"><button class="btn-delete" title="Видалити">✕</button></td>
-        </tr>
-        <tr>
-          <td>B-205</td>
-          <td>2</td>
-          <td>Легковий</td>
-          <td>Вільне</td>
-          <td>40</td>
-          <td>Ні</td>
-          <td>B</td>
-          <td class="action-cell"><button class="btn-delete" title="Видалити">✕</button></td>
-        </tr>
-      </tbody>
+      <tbody></tbody>
     </table>
   </div>
 
@@ -106,38 +91,26 @@
           <th>Дії</th>
         </tr>
       </thead>
-      <tbody>
-        <tr>
-          <td>AA 1234 BB</td>
-          <td>Tesla</td>
-          <td>Model 3</td>
-          <td>Білий</td>
-          <td>Коваль О. В.</td>
-          <td>+380671112233</td>
-          <td>08:30</td>
-          <td class="action-cell"><button class="btn-delete" title="Видалити">✕</button></td>
-        </tr>
-        <tr>
-          <td>BC 5544 AI</td>
-          <td>Toyota</td>
-          <td>RAV4</td>
-          <td>Сірий</td>
-          <td>Мельник Д. І.</td>
-          <td>+380502223344</td>
-          <td>09:15</td>
-          <td class="action-cell"><button class="btn-delete" title="Видалити">✕</button></td>
-        </tr>
-      </tbody>
+      <tbody></tbody>
     </table>
   </div>
 
-  <!-- ТАБ 3: Сесії -->
+  <!-- ТАБ 3: Сесії (Із залежними випадаючими списками) -->
   <div id="tab-sessions" class="tab-content">
     <h3>Додати паркувальну сесію</h3>
     <form id="form-sessions" class="form-container">
       <input type="text" id="ses-id" placeholder="ID сесії (S-101)" required>
-      <input type="text" id="ses-spot" placeholder="Номер місця" required>
-      <input type="text" id="ses-plate" placeholder="Держномер" required>
+      
+      <!-- Динамічний випадаючий список із таблиці «Паркомісця» -->
+      <select id="ses-spot" required title="Оберіть зареєстроване паркомісце">
+        <option value="" disabled selected>Оберіть паркомісце...</option>
+      </select>
+
+      <!-- Динамічний випадаючий список із таблиці «Автомобілі» -->
+      <select id="ses-plate" required title="Оберіть зареєстрований автомобіль">
+        <option value="" disabled selected>Оберіть держномер авто...</option>
+      </select>
+
       <input type="time" id="ses-start" required>
       <input type="time" id="ses-end" required>
       <input type="number" id="ses-cost" placeholder="Вартість (грн)" required>
@@ -161,18 +134,7 @@
           <th>Дії</th>
         </tr>
       </thead>
-      <tbody>
-        <tr>
-          <td>S-901</td>
-          <td>A-101</td>
-          <td>AA 1234 BB</td>
-          <td>08:30</td>
-          <td>11:30</td>
-          <td>180</td>
-          <td>Оплачено</td>
-          <td class="action-cell"><button class="btn-delete" title="Видалити">✕</button></td>
-        </tr>
-      </tbody>
+      <tbody></tbody>
     </table>
   </div>
 
