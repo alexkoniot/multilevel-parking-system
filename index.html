@@ -3,169 +3,170 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Лабораторна робота №1: Багатоярусна парковка</title>
-  <link rel="stylesheet" href="styles.css">
+  <title>Багатоярусна парковка - Лабораторна №2</title>
+  <style>
+    /* Мінімальні стилі для роботи перемикання та структури */
+    .tab-content { display: none; margin-top: 15px; }
+    .tab-content.active { display: block; }
+    .tab-btn.active { font-weight: bold; }
+    .form-container { margin-bottom: 20px; padding: 10px; border: 1px solid #ccc; }
+    .form-group { display: inline-block; margin-right: 10px; margin-bottom: 8px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+    th { background-color: #f2f2f2; }
+  </style>
 </head>
 <body>
 
-  <h1>Система обліку: Багатоярусна автопарковка</h1>
+  <h1>Система обліку «Багатоярусна парковка»</h1>
 
-  <!-- Панель табів -->
-  <div class="tabs-nav">
-    <button class="tab-button active" data-tab="spots">Паркомісця</button>
-    <button class="tab-button" data-tab="vehicles">Транспортні засоби</button>
-    <button class="tab-button" data-tab="sessions">Паркувальні сесії</button>
+  <!-- Кнопки перемикання табів -->
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="tab-spots">Паркомісця</button>
+    <button class="tab-btn" data-tab="tab-vehicles">Автомобілі</button>
+    <button class="tab-btn" data-tab="tab-sessions">Паркувальні сесії</button>
   </div>
 
-  <!-- Таблиця 1: Паркувальні місця -->
-  <section id="spots" class="tab-content active">
-    <h2>Реєстр паркувальних місць</h2>
-    <table border="1">
+  <!-- ТАБ 1: Паркомісця -->
+  <div id="tab-spots" class="tab-content active">
+    <h3>Додати нове паркомісце</h3>
+    <form id="form-spots" class="form-container">
+      <div class="form-group"><input type="text" id="spot-number" placeholder="Номер (A-101)" required></div>
+      <div class="form-group"><input type="number" id="spot-floor" placeholder="Поверх" min="1" max="10" required></div>
+      <div class="form-group">
+        <select id="spot-type" required>
+          <option value="Легковий">Легковий</option>
+          <option value="Електро">Електро</option>
+          <option value="SUV / Позашляховик">SUV</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <select id="spot-status">
+          <option value="Вільне">Вільне</option>
+          <option value="Зайняте">Зайняте</option>
+        </select>
+      </div>
+      <div class="form-group"><input type="number" id="spot-rate" placeholder="Тариф (грн/год)" required></div>
+      <div class="form-group">
+        <select id="spot-charger">
+          <option value="Так">Зарядка: Так</option>
+          <option value="Ні">Зарядка: Ні</option>
+        </select>
+      </div>
+      <div class="form-group"><input type="text" id="spot-sector" placeholder="Сектор (A, B...)" required></div>
+      <button type="submit">Додати місце</button>
+    </form>
+
+    <table id="table-spots">
       <thead>
         <tr>
-          <th>Код місця</th>
-          <th>Ярус (поверх)</th>
-          <th>Категорія</th>
-          <th>EV-зарядка</th>
-          <th>Крите місце</th>
-          <th>Тариф (грн/год)</th>
+          <th>Номер місця</th>
+          <th>Поверх</th>
+          <th>Тип місця</th>
           <th>Статус</th>
+          <th>Тариф (грн/год)</th>
+          <th>Зарядна станція</th>
+          <th>Сектор</th>
         </tr>
       </thead>
       <tbody>
         <tr>
           <td>A-101</td>
-          <td>1 поверх</td>
-          <td>Для осіб з інвалідністю</td>
-          <td>Ні</td>
-          <td>Так</td>
-          <td>40</td>
-          <td>Вільне</td>
-        </tr>
-        <tr>
-          <td>A-102</td>
-          <td>1 поверх</td>
-          <td>Електромобілі</td>
-          <td>Так (22 кВт)</td>
-          <td>Так</td>
-          <td>80</td>
+          <td>1</td>
+          <td>Електро</td>
           <td>Зайняте</td>
-        </tr>
-        <tr>
-          <td>B-205</td>
-          <td>2 поверх</td>
-          <td>Стандартне</td>
-          <td>Ні</td>
+          <td>60</td>
           <td>Так</td>
-          <td>50</td>
-          <td>Вільне</td>
-        </tr>
-        <tr>
-          <td>C-310</td>
-          <td>3 поверх (дах)</td>
-          <td>Стандартне</td>
-          <td>Ні</td>
-          <td>Ні</td>
-          <td>35</td>
-          <td>Заброньоване</td>
+          <td>A</td>
         </tr>
       </tbody>
     </table>
-  </section>
+  </div>
 
-  <!-- Таблиця 2: Транспортні засоби -->
-  <section id="vehicles" class="tab-content">
-    <h2>База зареєстрованих авто та клієнтів</h2>
-    <table border="1">
+  <!-- ТАБ 2: Транспортні засоби -->
+  <div id="tab-vehicles" class="tab-content">
+    <h3>Додати автомобіль</h3>
+    <form id="form-vehicles" class="form-container">
+      <div class="form-group"><input type="text" id="veh-plate" placeholder="Держномер (AA1111BB)" required></div>
+      <div class="form-group"><input type="text" id="veh-brand" placeholder="Марка" required></div>
+      <div class="form-group"><input type="text" id="veh-model" placeholder="Модель" required></div>
+      <div class="form-group"><input type="text" id="veh-color" placeholder="Колір" required></div>
+      <div class="form-group"><input type="text" id="veh-owner" placeholder="ПІБ водія" required></div>
+      <div class="form-group"><input type="tel" id="veh-phone" placeholder="Телефон" required></div>
+      <div class="form-group"><input type="time" id="veh-time" required></div>
+      <button type="submit">Додати авто</button>
+    </form>
+
+    <table id="table-vehicles">
       <thead>
         <tr>
-          <th>ID</th>
-          <th>Номерний знак</th>
-          <th>Марка та модель</th>
-          <th>Тип кузова</th>
-          <th>Власник (ПІБ)</th>
+          <th>Держномер</th>
+          <th>Марка</th>
+          <th>Модель</th>
+          <th>Колір</th>
+          <th>ПІБ водія</th>
           <th>Телефон</th>
-          <th>Абонемент</th>
+          <th>Час заїзду</th>
         </tr>
       </thead>
       <tbody>
         <tr>
-          <td>V-001</td>
-          <td>KA 4521 BO</td>
-          <td>Toyota RAV4</td>
-          <td>Кросовер</td>
-          <td>Мельник Дмитро Ігорович</td>
-          <td>+38 (067) 123-45-67</td>
-          <td>Так</td>
-        </tr>
-        <tr>
-          <td>V-002</td>
-          <td>AA 8800 XT</td>
-          <td>Nissan Leaf</td>
-          <td>Хетчбек (EV)</td>
-          <td>Ковальчук Тетяна Андріївна</td>
-          <td>+38 (050) 987-65-43</td>
-          <td>Ні</td>
-        </tr>
-        <tr>
-          <td>V-003</td>
-          <td>BC 3312 CB</td>
-          <td>BMW 520d</td>
-          <td>Седан</td>
-          <td>Сидоренко Василь Олегович</td>
-          <td>+38 (093) 444-22-11</td>
-          <td>Так</td>
+          <td>AA 1234 BB</td>
+          <td>Tesla</td>
+          <td>Model 3</td>
+          <td>Білий</td>
+          <td>Коваль О. В.</td>
+          <td>+380671112233</td>
+          <td>08:30</td>
         </tr>
       </tbody>
     </table>
-  </section>
+  </div>
 
-  <!-- Таблиця 3: Журнал сесій -->
-  <section id="sessions" class="tab-content">
-    <h2>Журнал поточних та завершених сесій</h2>
-    <table border="1">
+  <!-- ТАБ 3: Сесії -->
+  <div id="tab-sessions" class="tab-content">
+    <h3>Додати паркувальну сесію</h3>
+    <form id="form-sessions" class="form-container">
+      <div class="form-group"><input type="text" id="ses-id" placeholder="ID сесії (S-101)" required></div>
+      <div class="form-group"><input type="text" id="ses-spot" placeholder="Номер місця" required></div>
+      <div class="form-group"><input type="text" id="ses-plate" placeholder="Держномер" required></div>
+      <div class="form-group"><input type="time" id="ses-start" required></div>
+      <div class="form-group"><input type="time" id="ses-end" required></div>
+      <div class="form-group"><input type="number" id="ses-cost" placeholder="Вартість (грн)" required></div>
+      <div class="form-group">
+        <select id="ses-status">
+          <option value="Оплачено">Оплачено</option>
+          <option value="Очікує оплати">Очікує оплати</option>
+        </select>
+      </div>
+      <button type="submit">Додати сесію</button>
+    </form>
+
+    <table id="table-sessions">
       <thead>
         <tr>
-          <th>№ Талона</th>
-          <th>Номерний знак</th>
+          <th>ID сесії</th>
           <th>Місце</th>
-          <th>Час заїзду</th>
-          <th>Час виїзду</th>
-          <th>До сплати (грн)</th>
+          <th>Держномер</th>
+          <th>Початок</th>
+          <th>Завершення</th>
+          <th>Сума (грн)</th>
           <th>Статус оплати</th>
         </tr>
       </thead>
       <tbody>
         <tr>
-          <td>T-8901</td>
-          <td>AA 8800 XT</td>
-          <td>A-102</td>
-          <td>2026-10-24 08:30</td>
-          <td>В процесі</td>
-          <td>160</td>
-          <td>Очікує виїзду</td>
-        </tr>
-        <tr>
-          <td>T-8902</td>
-          <td>KA 4521 BO</td>
-          <td>B-205</td>
-          <td>2026-10-24 09:15</td>
-          <td>2026-10-24 12:15</td>
-          <td>150</td>
-          <td>Сплачено (Абонемент)</td>
-        </tr>
-        <tr>
-          <td>T-8895</td>
-          <td>AI 1092 EK</td>
-          <td>C-310</td>
-          <td>2026-10-23 18:00</td>
-          <td>2026-10-24 07:00</td>
-          <td>455</td>
-          <td>Сплачено (Карта)</td>
+          <td>S-901</td>
+          <td>A-101</td>
+          <td>AA 1234 BB</td>
+          <td>08:30</td>
+          <td>11:30</td>
+          <td>180</td>
+          <td>Оплачено</td>
         </tr>
       </tbody>
     </table>
-  </section>
+  </div>
 
   <script src="script.js"></script>
 </body>
