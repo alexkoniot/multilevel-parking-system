@@ -3,20 +3,25 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Багатоярусна парковка - Завдання №4</title>
+  <title>Багатоярусна парковка - Лабораторна №4</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
   <h1>Система обліку «Багатоярусна парковка»</h1>
 
-  <!-- Панель статусу синхронізації -->
-  <div class="storage-info">
-    <span>Сховище: <strong>LocalStorage активовано</strong></span>
-    <span>Міжвкладочна синхронізація: <strong>Увімкнено (Live)</strong></span>
+  <!-- Панель керування сховищем -->
+  <div class="storage-toolbar">
+    <div class="status-indicator">
+      Стан LocalStorage: <span id="storage-status" class="badge">Завантаження...</span>
+    </div>
+    <div class="toolbar-actions">
+      <button id="btn-seed" type="button">Завантажити демо-дані</button>
+      <button id="btn-clear" type="button" class="btn-danger">Очистити базу</button>
+    </div>
   </div>
 
-  <!-- Навігація табів -->
+  <!-- Навігаційні таби -->
   <div class="tabs">
     <button class="tab-btn active" data-tab="tab-spots">Паркомісця</button>
     <button class="tab-btn" data-tab="tab-vehicles">Автомобілі</button>
@@ -27,9 +32,9 @@
   <div id="tab-spots" class="tab-content active">
     <h3>Додати нове паркомісце</h3>
     <form id="form-spots" class="form-container">
-      <input type="text" id="spot-number" placeholder="Номер (напр. A-101)" required>
+      <input type="text" id="spot-code" placeholder="Код місця (A-101)" required>
       <input type="number" id="spot-floor" placeholder="Поверх (1-10)" min="1" max="10" required>
-      <select id="spot-type" required>
+      <select id="spot-category" required>
         <option value="Легковий">Легковий</option>
         <option value="Електро">Електро</option>
         <option value="SUV">SUV</option>
@@ -39,20 +44,20 @@
         <option value="Зайняте">Зайняте</option>
       </select>
       <input type="number" id="spot-rate" placeholder="Тариф (грн/год)" required>
-      <select id="spot-charger">
+      <select id="spot-hasCharging">
         <option value="Так">Зарядка: Так</option>
         <option value="Ні">Зарядка: Ні</option>
       </select>
       <input type="text" id="spot-sector" placeholder="Сектор (A, B...)" required>
-      <button type="submit">Додати місце</button>
+      <button type="submit">Зберегти в базу</button>
     </form>
 
     <table id="table-spots">
       <thead>
         <tr>
-          <th>Номер місця</th>
+          <th>Код місця</th>
           <th>Поверх</th>
-          <th>Тип місця</th>
+          <th>Категорія</th>
           <th>Статус</th>
           <th>Тариф (грн)</th>
           <th>Зарядка</th>
@@ -66,16 +71,16 @@
 
   <!-- ТАБ 2: Транспортні засоби -->
   <div id="tab-vehicles" class="tab-content">
-    <h3>Додати автомобіль</h3>
+    <h3>Додати транспортний засіб</h3>
     <form id="form-vehicles" class="form-container">
       <input type="text" id="veh-plate" placeholder="Держномер (AA 1234 BB)" required>
-      <input type="text" id="veh-brand" placeholder="Марка" required>
-      <input type="text" id="veh-model" placeholder="Модель" required>
+      <input type="text" id="veh-brand" placeholder="Марка авто" required>
+      <input type="text" id="veh-model" placeholder="Модель авто" required>
       <input type="text" id="veh-color" placeholder="Колір" required>
-      <input type="text" id="veh-owner" placeholder="ПІБ водія" required>
+      <input type="text" id="veh-driver" placeholder="ПІБ власника" required>
       <input type="tel" id="veh-phone" placeholder="Телефон" required>
       <input type="time" id="veh-time" required>
-      <button type="submit">Додати авто</button>
+      <button type="submit">Зберегти в базу</button>
     </form>
 
     <table id="table-vehicles">
@@ -85,7 +90,7 @@
           <th>Марка</th>
           <th>Модель</th>
           <th>Колір</th>
-          <th>ПІБ водія</th>
+          <th>Власник</th>
           <th>Телефон</th>
           <th>Час заїзду</th>
           <th>Дії</th>
@@ -95,42 +100,33 @@
     </table>
   </div>
 
-  <!-- ТАБ 3: Сесії (Із залежними випадаючими списками) -->
+  <!-- ТАБ 3: Паркувальні сесії -->
   <div id="tab-sessions" class="tab-content">
-    <h3>Додати паркувальну сесію</h3>
+    <h3>Оформити паркувальну сесію</h3>
     <form id="form-sessions" class="form-container">
-      <input type="text" id="ses-id" placeholder="ID сесії (S-101)" required>
-      
-      <!-- Динамічний випадаючий список із таблиці «Паркомісця» -->
-      <select id="ses-spot" required title="Оберіть зареєстроване паркомісце">
-        <option value="" disabled selected>Оберіть паркомісце...</option>
-      </select>
-
-      <!-- Динамічний випадаючий список із таблиці «Автомобілі» -->
-      <select id="ses-plate" required title="Оберіть зареєстрований автомобіль">
-        <option value="" disabled selected>Оберіть держномер авто...</option>
-      </select>
-
+      <input type="text" id="ses-id" placeholder="ID талона (T-100)" required>
+      <select id="ses-spot" required><option value="" disabled selected>Завантаження...</option></select>
+      <select id="ses-plate" required><option value="" disabled selected>Завантаження...</option></select>
       <input type="time" id="ses-start" required>
       <input type="time" id="ses-end" required>
-      <input type="number" id="ses-cost" placeholder="Вартість (грн)" required>
+      <input type="number" id="ses-cost" placeholder="Сума (грн)" required>
       <select id="ses-status">
         <option value="Оплачено">Оплачено</option>
         <option value="Очікує оплати">Очікує оплати</option>
       </select>
-      <button type="submit">Додати сесію</button>
+      <button type="submit">Зберегти в базу</button>
     </form>
 
     <table id="table-sessions">
       <thead>
         <tr>
-          <th>ID сесії</th>
+          <th>№ Талона</th>
           <th>Місце</th>
           <th>Держномер</th>
           <th>Початок</th>
-          <th>Завершення</th>
+          <th>Кінець</th>
           <th>Сума (грн)</th>
-          <th>Статус оплати</th>
+          <th>Статус</th>
           <th>Дії</th>
         </tr>
       </thead>

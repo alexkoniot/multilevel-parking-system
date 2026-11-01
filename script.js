@@ -1,330 +1,260 @@
 document.addEventListener('DOMContentLoaded', () => {
-  const STORAGE_KEY = 'parking_system_data';
+  const DB_KEY = 'parking_db';
 
-  // Початкові демонстраційні дані за замовчуванням
-  const defaultState = {
+  // Базові дані для ініціалізації порожнього сховища
+  const SEED_DATA = {
     spots: [
-      ['A-101', '1', 'Електро', 'Зайняте', '60', 'Так', 'A'],
-      ['B-205', '2', 'Легковий', 'Вільне', '40', 'Ні', 'B'],
-      ['C-301', '3', 'SUV', 'Вільне', '50', 'Ні', 'C']
+      { code: 'A-101', floor: '1', category: 'Електро', status: 'Зайняте', rate: '60', hasCharging: 'Так', sector: 'A' },
+      { code: 'B-205', floor: '2', category: 'Легковий', status: 'Вільне', rate: '40', hasCharging: 'Ні', sector: 'B' }
     ],
     vehicles: [
-      ['AA 1234 BB', 'Tesla', 'Model 3', 'Білий', 'Коваль О. В.', '+380671112233', '08:30'],
-      ['BC 5544 AI', 'Toyota', 'RAV4', 'Сірий', 'Мельник Д. І.', '+380502223344', '09:15'],
-      ['KA 9988 OO', 'BMW', 'X5', 'Чорний', 'Шевченко Т. Г.', '+380931234567', '10:00']
+      { plate: 'AA 1234 BB', brand: 'Tesla', model: 'Model 3', color: 'Білий', driver: 'Коваль О. В.', phone: '+380671112233', time: '08:30' }
     ],
     sessions: [
-      ['S-901', 'A-101', 'AA 1234 BB', '08:30', '11:30', '180', 'Оплачено']
+      { id: 'T-901', spotCode: 'A-101', vehiclePlate: 'AA 1234 BB', start: '08:30', end: '11:30', cost: '180', status: 'Оплачено' }
     ]
   };
 
-  // Поточний робочий стан у пам'яті
-  let state = {
-    spots: [],
-    vehicles: [],
-    sessions: []
+  // API для роботи зі сховищем
+  const Storage = {
+    get: () => JSON.parse(localStorage.getItem(DB_KEY)) || { spots: [], vehicles: [], sessions: [] },
+    save: (data) => {
+      localStorage.setItem(DB_KEY, JSON.stringify(data));
+      updateStorageBadge();
+    },
+    init: function() { if (!localStorage.getItem(DB_KEY)) this.save(SEED_DATA); },
+    clear: function() { localStorage.removeItem(DB_KEY); updateStorageBadge(); }
   };
 
-  // ==========================================
-  // 1. РОБОТА З LOCALSTORAGE
-  // ==========================================
-  function loadState() {
-    try {
-      const savedData = localStorage.getItem(STORAGE_KEY);
-      if (savedData) {
-        state = JSON.parse(savedData);
-      } else {
-        // Якщо це перший запуск — записуємо базові дані
-        state = JSON.parse(JSON.stringify(defaultState));
-        saveState();
-      }
-    } catch (e) {
-      console.error('Помилка читання з LocalStorage:', e);
-      state = JSON.parse(JSON.stringify(defaultState));
+  // Оновлення статусу LocalStorage в UI
+  function updateStorageBadge() {
+    const badge = document.getElementById('storage-status');
+    const data = JSON.parse(localStorage.getItem(DB_KEY));
+    
+    if (data) {
+      const count = data.spots.length + data.vehicles.length + data.sessions.length;
+      badge.textContent = `Підключено (${count} записів)`;
+      badge.className = 'badge active';
+    } else {
+      badge.textContent = 'Порожньо';
+      badge.className = 'badge empty';
     }
   }
 
-  function saveState() {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-    } catch (e) {
-      console.error('Помилка запису в LocalStorage:', e);
-    }
-  }
-
-  // ==========================================
-  // 2. ДИНАМІЧНІ СПИСКИ (ВИМОГА №4)
-  // ==========================================
-  // Замість ручного введення — заповнюємо <select> значеннями з таблиць
-  function updateSessionDropdowns() {
+  // Оновлення випадаючих списків (Реляційність)
+  function updateDropdowns(db) {
     const spotSelect = document.getElementById('ses-spot');
     const plateSelect = document.getElementById('ses-plate');
+    
+    const currSpot = spotSelect.value;
+    const currPlate = plateSelect.value;
 
-    const currentSelectedSpot = spotSelect.value;
-    const currentSelectedPlate = plateSelect.value;
-
-    // Очищаємо старі пункти
     spotSelect.innerHTML = '<option value="" disabled selected>Оберіть паркомісце...</option>';
-    plateSelect.innerHTML = '<option value="" disabled selected>Оберіть держномер авто...</option>';
+    plateSelect.innerHTML = '<option value="" disabled selected>Оберіть держномер...</option>';
 
-    // Наповнюємо паркомісцями (беремо значення колонки 0 — "Номер місця")
-    state.spots.forEach(spot => {
-      const spotNum = spot[0];
-      const opt = document.createElement('option');
-      opt.value = spotNum;
-      opt.textContent = `${spotNum} (Поверх ${spot[1]}, ${spot[2]})`;
-      if (spotNum === currentSelectedSpot) opt.selected = true;
-      spotSelect.appendChild(opt);
+    db.spots.forEach(s => {
+      const opt = new Option(`${s.code} (Поверх ${s.floor}, ${s.category})`, s.code);
+      if (s.code === currSpot) opt.selected = true;
+      spotSelect.add(opt);
     });
 
-    // Наповнюємо автомобілями (беремо значення колонки 0 — "Держномер")
-    state.vehicles.forEach(veh => {
-      const plate = veh[0];
-      const opt = document.createElement('option');
-      opt.value = plate;
-      opt.textContent = `${plate} (${veh[1]} ${veh[2]} - ${veh[4]})`;
-      if (plate === currentSelectedPlate) opt.selected = true;
-      plateSelect.appendChild(opt);
+    db.vehicles.forEach(v => {
+      const opt = new Option(`${v.plate} (${v.brand} - ${v.driver})`, v.plate);
+      if (v.plate === currPlate) opt.selected = true;
+      plateSelect.add(opt);
     });
   }
 
-  // ==========================================
-  // 3. ВІДОБРАЖЕННЯ ТАБЛИЦЬ (RENDER)
-  // ==========================================
-  function renderTable(tableId, dataList) {
-    const tbody = document.querySelector(`#${tableId} tbody`);
-    tbody.innerHTML = '';
+  // Універсальний рендеринг усіх таблиць
+  function renderApp() {
+    const db = Storage.get();
+    
+    const tableConfigs = [
+      { id: 'spots', msg: 'Додайте місце через форму.' },
+      { id: 'vehicles', msg: 'Додайте авто через форму.' },
+      { id: 'sessions', msg: 'Оформіть сесію через форму.' }
+    ];
 
-    dataList.forEach((rowValues, rowIndex) => {
-      const tr = document.createElement('tr');
-      tr.setAttribute('data-row-index', rowIndex);
+    tableConfigs.forEach(({ id, msg }) => {
+      const tbody = document.querySelector(`#table-${id} tbody`);
+      tbody.innerHTML = '';
+      
+      if (db[id].length === 0) {
+        tbody.innerHTML = `<tr class="empty-row"><td colspan="10">${msg}</td></tr>`;
+      } else {
+        db[id].forEach((item, index) => {
+          const tr = document.createElement('tr');
+          tr.dataset.index = index;
+          tr.dataset.entity = id;
+          
+          // Динамічно створюємо комірки на основі ключів об'єкта
+          Object.entries(item).forEach(([key, val]) => {
+            const td = document.createElement('td');
+            td.dataset.field = key;
+            td.textContent = val;
+            tr.appendChild(td);
+          });
+          
+          // Комірка дії (Видалення)
+          const actionTd = document.createElement('td');
+          actionTd.className = 'action-cell';
+          actionTd.innerHTML = `<button class="btn-delete" title="Видалити">✕</button>`;
+          tr.appendChild(actionTd);
+          
+          tbody.appendChild(tr);
+        });
+      }
+    });
 
-      // Комірки з даними
-      rowValues.forEach((val, colIndex) => {
-        const td = document.createElement('td');
-        td.textContent = val;
-        td.setAttribute('data-col-index', colIndex);
-        tr.appendChild(td);
-      });
+    updateDropdowns(db);
+    updateStorageBadge();
+  }
 
-      // Комірка з кнопкою видалення
-      const actionTd = document.createElement('td');
-      actionTd.className = 'action-cell';
-      const deleteBtn = document.createElement('button');
-      deleteBtn.className = 'btn-delete';
-      deleteBtn.title = 'Видалити';
-      deleteBtn.textContent = '✕';
-      actionTd.appendChild(deleteBtn);
-      tr.appendChild(actionTd);
+  // Міжвкладочна синхронізація
+  window.addEventListener('storage', (e) => {
+    if (e.key === DB_KEY) renderApp();
+  });
 
-      tbody.appendChild(tr);
+  // Універсальний обробник відправки форм
+  function handleFormSubmit(formId, entityName, getDataFn) {
+    document.getElementById(formId).addEventListener('submit', (e) => {
+      e.preventDefault();
+      const db = Storage.get();
+      db[entityName].push(getDataFn());
+      Storage.save(db);
+      renderApp();
+      e.target.reset();
     });
   }
 
-  function renderAll() {
-    renderTable('table-spots', state.spots);
-    renderTable('table-vehicles', state.vehicles);
-    renderTable('table-sessions', state.sessions);
-    updateSessionDropdowns();
-  }
+  // Прив'язка форм
+  handleFormSubmit('form-spots', 'spots', () => ({
+    code: document.getElementById('spot-code').value.trim(),
+    floor: document.getElementById('spot-floor').value,
+    category: document.getElementById('spot-category').value,
+    status: document.getElementById('spot-status').value,
+    rate: document.getElementById('spot-rate').value,
+    hasCharging: document.getElementById('spot-hasCharging').value,
+    sector: document.getElementById('spot-sector').value.trim()
+  }));
 
-  // ==========================================
-  // 4. МІЖВКЛАДОЧНА СИНХРОНІЗАЦІЯ (STORAGE EVENT)
-  // ==========================================
-  // Якщо в іншій вкладці або вікні змінилися дані — негайно оновлюємо поточну сторінку
-  window.addEventListener('storage', (event) => {
-    if (event.key === STORAGE_KEY) {
-      loadState();
-      renderAll();
-    }
-  });
+  handleFormSubmit('form-vehicles', 'vehicles', () => ({
+    plate: document.getElementById('veh-plate').value.trim(),
+    brand: document.getElementById('veh-brand').value.trim(),
+    model: document.getElementById('veh-model').value.trim(),
+    color: document.getElementById('veh-color').value.trim(),
+    driver: document.getElementById('veh-driver').value.trim(),
+    phone: document.getElementById('veh-phone').value.trim(),
+    time: document.getElementById('veh-time').value
+  }));
 
-  // ==========================================
-  // 5. ПЕРЕМИКАННЯ ТАБІВ
-  // ==========================================
-  const tabButtons = document.querySelectorAll('.tab-btn');
-  const tabContents = document.querySelectorAll('.tab-content');
+  handleFormSubmit('form-sessions', 'sessions', () => ({
+    id: document.getElementById('ses-id').value.trim(),
+    spotCode: document.getElementById('ses-spot').value,
+    vehiclePlate: document.getElementById('ses-plate').value,
+    start: document.getElementById('ses-start').value,
+    end: document.getElementById('ses-end').value,
+    cost: document.getElementById('ses-cost').value,
+    status: document.getElementById('ses-status').value
+  }));
 
-  tabButtons.forEach(btn => {
-    btn.addEventListener('click', () => {
-      tabButtons.forEach(b => b.classList.remove('active'));
-      tabContents.forEach(c => c.classList.remove('active'));
+  // Видалення з перевіркою зв'язків
+  function deleteRow(entity, index) {
+    const db = Storage.get();
 
-      btn.classList.add('active');
-      const targetId = btn.getAttribute('data-tab');
-      document.getElementById(targetId).classList.add('active');
-    });
-  });
-
-  // ==========================================
-  // 6. ДОДАВАННЯ ДАНИХ З ФОРМ
-  // ==========================================
-  document.getElementById('form-spots').addEventListener('submit', (e) => {
-    e.preventDefault();
-    const newSpot = [
-      document.getElementById('spot-number').value.trim(),
-      document.getElementById('spot-floor').value,
-      document.getElementById('spot-type').value,
-      document.getElementById('spot-status').value,
-      document.getElementById('spot-rate').value,
-      document.getElementById('spot-charger').value,
-      document.getElementById('spot-sector').value.trim()
-    ];
-
-    state.spots.push(newSpot);
-    saveState();
-    renderAll();
-    e.target.reset();
-  });
-
-  document.getElementById('form-vehicles').addEventListener('submit', (e) => {
-    e.preventDefault();
-    const newVeh = [
-      document.getElementById('veh-plate').value.trim(),
-      document.getElementById('veh-brand').value.trim(),
-      document.getElementById('veh-model').value.trim(),
-      document.getElementById('veh-color').value.trim(),
-      document.getElementById('veh-owner').value.trim(),
-      document.getElementById('veh-phone').value.trim(),
-      document.getElementById('veh-time').value
-    ];
-
-    state.vehicles.push(newVeh);
-    saveState();
-    renderAll();
-    e.target.reset();
-  });
-
-  document.getElementById('form-sessions').addEventListener('submit', (e) => {
-    e.preventDefault();
-    const newSession = [
-      document.getElementById('ses-id').value.trim(),
-      document.getElementById('ses-spot').value, // Обрано з <select>
-      document.getElementById('ses-plate').value, // Обрано з <select>
-      document.getElementById('ses-start').value,
-      document.getElementById('ses-end').value,
-      document.getElementById('ses-cost').value,
-      document.getElementById('ses-status').value
-    ];
-
-    state.sessions.push(newSession);
-    saveState();
-    renderAll();
-    e.target.reset();
-  });
-
-  // ==========================================
-  // 7. РЕЛЯЦІЙНА ПЕРЕВІРКА ТА ВИДАЛЕННЯ
-  // ==========================================
-  function handleDelete(tableId, rowIndex) {
-    if (tableId === 'table-spots') {
-      const spotNumber = state.spots[rowIndex][0];
-      const isUsed = state.sessions.some(ses => ses[1] === spotNumber);
-      if (isUsed) {
-        alert(`Помилка видалення!\n\nПаркомісце «${spotNumber}» зараз фігурує у списку сесій.\nСпочатку видаліть або змініть прив'язану сесію.`);
-        return;
+    if (entity === 'spots') {
+      const code = db.spots[index].code;
+      if (db.sessions.some(s => s.spotCode === code)) {
+        return alert(`Помилка: Паркомісце «${code}» використовується в сесії.`);
       }
-      if (confirm(`Видалити паркомісце «${spotNumber}»?`)) {
-        state.spots.splice(rowIndex, 1);
-        saveState();
-        renderAll();
-      }
-    } else if (tableId === 'table-vehicles') {
-      const licensePlate = state.vehicles[rowIndex][0];
-      const isUsed = state.sessions.some(ses => ses[2] === licensePlate);
-      if (isUsed) {
-        alert(`Помилка видалення!\n\nАвтомобіль «${licensePlate}» зафіксований у сесіях.\nВидалення неможливе.`);
-        return;
-      }
-      if (confirm(`Видалити автомобіль «${licensePlate}»?`)) {
-        state.vehicles.splice(rowIndex, 1);
-        saveState();
-        renderAll();
-      }
-    } else if (tableId === 'table-sessions') {
-      const sessionId = state.sessions[rowIndex][0];
-      if (confirm(`Видалити сесію «${sessionId}»?`)) {
-        state.sessions.splice(rowIndex, 1);
-        saveState();
-        renderAll();
+    } else if (entity === 'vehicles') {
+      const plate = db.vehicles[index].plate;
+      if (db.sessions.some(s => s.vehiclePlate === plate)) {
+        return alert(`Помилка: Автомобіль «${plate}» зафіксований в сесії.`);
       }
     }
+
+    db[entity].splice(index, 1);
+    Storage.save(db);
+    renderApp();
   }
 
-  // ==========================================
-  // 8. ІНЛАЙН-РЕДАГУВАННЯ КОМІРОК
-  // ==========================================
-  function handleInlineEdit(cell, tableId) {
+  // Інлайн-редагування
+  function editCell(cell) {
     if (cell.querySelector('input')) return;
 
-    const row = cell.closest('tr');
-    const rowIndex = parseInt(row.getAttribute('data-row-index'), 10);
-    const colIndex = parseInt(cell.getAttribute('data-col-index'), 10);
+    const tr = cell.closest('tr');
+    const { index, entity } = tr.dataset;
+    const field = cell.dataset.field;
+    const oldVal = cell.textContent.trim();
 
-    const originalText = cell.textContent.trim();
     const input = document.createElement('input');
     input.type = 'text';
     input.className = 'cell-input';
-    input.value = originalText;
-
+    input.value = oldVal;
+    
     cell.textContent = '';
     cell.appendChild(input);
     input.focus();
 
     let isSaved = false;
-    const saveValue = () => {
+    const commit = () => {
       if (isSaved) return;
       isSaved = true;
-
-      const newValue = input.value.trim();
-      const finalValue = newValue !== '' ? newValue : originalText;
-
-      // Оновлюємо стан залежно від таблиці
-      if (tableId === 'table-spots') {
-        state.spots[rowIndex][colIndex] = finalValue;
-      } else if (tableId === 'table-vehicles') {
-        state.vehicles[rowIndex][colIndex] = finalValue;
-      } else if (tableId === 'table-sessions') {
-        state.sessions[rowIndex][colIndex] = finalValue;
-      }
-
-      saveState();
-      renderAll();
+      const db = Storage.get();
+      db[entity][index][field] = input.value.trim() || oldVal;
+      Storage.save(db);
+      renderApp();
     };
 
-    input.addEventListener('blur', saveValue);
+    input.addEventListener('blur', commit);
     input.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') {
-        saveValue();
-      } else if (e.key === 'Escape') {
+      if (e.key === 'Enter') commit();
+      if (e.key === 'Escape') {
         isSaved = true;
-        cell.textContent = originalText;
+        cell.textContent = oldVal;
       }
     });
   }
 
-  // ==========================================
-  // 9. ДЕЛЕГУВАННЯ ПОДІЙ ДЛЯ ВСІХ ТАБЛИЦЬ
-  // ==========================================
-  const tables = document.querySelectorAll('table');
-  tables.forEach(table => {
+  // Делегування подій для таблиць
+  document.querySelectorAll('table').forEach(table => {
     table.addEventListener('click', (e) => {
-      const deleteBtn = e.target.closest('.btn-delete');
-      if (deleteBtn) {
-        const row = deleteBtn.closest('tr');
-        const rowIndex = parseInt(row.getAttribute('data-row-index'), 10);
-        handleDelete(table.id, rowIndex);
-        return;
-      }
-
-      const cell = e.target.closest('td');
-      if (cell && !cell.classList.contains('action-cell')) {
-        handleInlineEdit(cell, table.id);
+      if (e.target.classList.contains('btn-delete')) {
+        const tr = e.target.closest('tr');
+        deleteRow(tr.dataset.entity, parseInt(tr.dataset.index, 10));
+      } else {
+        const cell = e.target.closest('td');
+        if (cell && !cell.classList.contains('action-cell') && !cell.closest('.empty-row')) {
+          editCell(cell);
+        }
       }
     });
   });
 
-  // Початкове завантаження та виведення даних
-  loadState();
-  renderAll();
+  // Перемикання табів
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tab-btn, .tab-content').forEach(el => el.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById(btn.dataset.tab).classList.add('active');
+    });
+  });
+
+  // Кнопки діагностики сховища
+  document.getElementById('btn-seed').addEventListener('click', () => {
+    Storage.save(SEED_DATA);
+    renderApp();
+  });
+
+  document.getElementById('btn-clear').addEventListener('click', () => {
+    if (confirm('Очистити всі збережені дані з LocalStorage?')) {
+      Storage.clear();
+      renderApp();
+    }
+  });
+
+  // Точка входу
+  Storage.init();
+  renderApp();
 });
