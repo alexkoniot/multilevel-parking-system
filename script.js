@@ -1,47 +1,13 @@
 document.addEventListener('DOMContentLoaded', () => {
   const DB_KEY = 'parking_db';
 
-  // Базові дані для ініціалізації порожнього сховища
-  const SEED_DATA = {
-    spots: [
-      { code: 'A-101', floor: '1', category: 'Електро', status: 'Зайняте', rate: '60', hasCharging: 'Так', sector: 'A' },
-      { code: 'B-205', floor: '2', category: 'Легковий', status: 'Вільне', rate: '40', hasCharging: 'Ні', sector: 'B' }
-    ],
-    vehicles: [
-      { plate: 'AA 1234 BB', brand: 'Tesla', model: 'Model 3', color: 'Білий', driver: 'Коваль О. В.', phone: '+380671112233', time: '08:30' }
-    ],
-    sessions: [
-      { id: 'T-901', spotCode: 'A-101', vehiclePlate: 'AA 1234 BB', start: '08:30', end: '11:30', cost: '180', status: 'Оплачено' }
-    ]
-  };
-
-  // API для роботи зі сховищем
   const Storage = {
     get: () => JSON.parse(localStorage.getItem(DB_KEY)) || { spots: [], vehicles: [], sessions: [] },
     save: (data) => {
       localStorage.setItem(DB_KEY, JSON.stringify(data));
-      updateStorageBadge();
-    },
-    init: function() { if (!localStorage.getItem(DB_KEY)) this.save(SEED_DATA); },
-    clear: function() { localStorage.removeItem(DB_KEY); updateStorageBadge(); }
+    }
   };
 
-  // Оновлення статусу LocalStorage в UI
-  function updateStorageBadge() {
-    const badge = document.getElementById('storage-status');
-    const data = JSON.parse(localStorage.getItem(DB_KEY));
-    
-    if (data) {
-      const count = data.spots.length + data.vehicles.length + data.sessions.length;
-      badge.textContent = `Підключено (${count} записів)`;
-      badge.className = 'badge active';
-    } else {
-      badge.textContent = 'Порожньо';
-      badge.className = 'badge empty';
-    }
-  }
-
-  // Оновлення випадаючих списків (Реляційність)
   function updateDropdowns(db) {
     const spotSelect = document.getElementById('ses-spot');
     const plateSelect = document.getElementById('ses-plate');
@@ -65,14 +31,13 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Універсальний рендеринг усіх таблиць
   function renderApp() {
     const db = Storage.get();
     
     const tableConfigs = [
-      { id: 'spots', msg: 'Додайте місце через форму.' },
-      { id: 'vehicles', msg: 'Додайте авто через форму.' },
-      { id: 'sessions', msg: 'Оформіть сесію через форму.' }
+      { id: 'spots', msg: 'Дані відсутні. Додайте перше місце через форму.' },
+      { id: 'vehicles', msg: 'Дані відсутні. Додайте перше авто через форму.' },
+      { id: 'sessions', msg: 'Дані відсутні. Оформіть першу сесію через форму.' }
     ];
 
     tableConfigs.forEach(({ id, msg }) => {
@@ -87,7 +52,6 @@ document.addEventListener('DOMContentLoaded', () => {
           tr.dataset.index = index;
           tr.dataset.entity = id;
           
-          // Динамічно створюємо комірки на основі ключів об'єкта
           Object.entries(item).forEach(([key, val]) => {
             const td = document.createElement('td');
             td.dataset.field = key;
@@ -95,7 +59,6 @@ document.addEventListener('DOMContentLoaded', () => {
             tr.appendChild(td);
           });
           
-          // Комірка дії (Видалення)
           const actionTd = document.createElement('td');
           actionTd.className = 'action-cell';
           actionTd.innerHTML = `<button class="btn-delete" title="Видалити">✕</button>`;
@@ -107,15 +70,12 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     updateDropdowns(db);
-    updateStorageBadge();
   }
 
-  // Міжвкладочна синхронізація
   window.addEventListener('storage', (e) => {
     if (e.key === DB_KEY) renderApp();
   });
 
-  // Універсальний обробник відправки форм
   function handleFormSubmit(formId, entityName, getDataFn) {
     document.getElementById(formId).addEventListener('submit', (e) => {
       e.preventDefault();
@@ -127,7 +87,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Прив'язка форм
   handleFormSubmit('form-spots', 'spots', () => ({
     code: document.getElementById('spot-code').value.trim(),
     floor: document.getElementById('spot-floor').value,
@@ -158,7 +117,6 @@ document.addEventListener('DOMContentLoaded', () => {
     status: document.getElementById('ses-status').value
   }));
 
-  // Видалення з перевіркою зв'язків
   function deleteRow(entity, index) {
     const db = Storage.get();
 
@@ -179,7 +137,6 @@ document.addEventListener('DOMContentLoaded', () => {
     renderApp();
   }
 
-  // Інлайн-редагування
   function editCell(cell) {
     if (cell.querySelector('input')) return;
 
@@ -217,7 +174,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Делегування подій для таблиць
   document.querySelectorAll('table').forEach(table => {
     table.addEventListener('click', (e) => {
       if (e.target.classList.contains('btn-delete')) {
@@ -232,7 +188,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // Перемикання табів
   document.querySelectorAll('.tab-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('.tab-btn, .tab-content').forEach(el => el.classList.remove('active'));
@@ -241,20 +196,5 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // Кнопки діагностики сховища
-  document.getElementById('btn-seed').addEventListener('click', () => {
-    Storage.save(SEED_DATA);
-    renderApp();
-  });
-
-  document.getElementById('btn-clear').addEventListener('click', () => {
-    if (confirm('Очистити всі збережені дані з LocalStorage?')) {
-      Storage.clear();
-      renderApp();
-    }
-  });
-
-  // Точка входу
-  Storage.init();
   renderApp();
 });

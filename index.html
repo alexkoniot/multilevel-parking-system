@@ -3,32 +3,19 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Багатоярусна парковка - Лабораторна №4</title>
+  <title>Багатоярусна парковка</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
   <h1>Система обліку «Багатоярусна парковка»</h1>
 
-  <!-- Панель керування сховищем -->
-  <div class="storage-toolbar">
-    <div class="status-indicator">
-      Стан LocalStorage: <span id="storage-status" class="badge">Завантаження...</span>
-    </div>
-    <div class="toolbar-actions">
-      <button id="btn-seed" type="button">Завантажити демо-дані</button>
-      <button id="btn-clear" type="button" class="btn-danger">Очистити базу</button>
-    </div>
-  </div>
-
-  <!-- Навігаційні таби -->
   <div class="tabs">
     <button class="tab-btn active" data-tab="tab-spots">Паркомісця</button>
     <button class="tab-btn" data-tab="tab-vehicles">Автомобілі</button>
     <button class="tab-btn" data-tab="tab-sessions">Паркувальні сесії</button>
   </div>
 
-  <!-- ТАБ 1: Паркомісця -->
   <div id="tab-spots" class="tab-content active">
     <h3>Додати нове паркомісце</h3>
     <form id="form-spots" class="form-container">
@@ -45,8 +32,8 @@
       </select>
       <input type="number" id="spot-rate" placeholder="Тариф (грн/год)" required>
       <select id="spot-hasCharging">
-        <option value="Так">Зарядка: Так</option>
-        <option value="Ні">Зарядка: Ні</option>
+        <option value="Так">Так</option>
+        <option value="Ні">Ні</option>
       </select>
       <input type="text" id="spot-sector" placeholder="Сектор (A, B...)" required>
       <button type="submit">Зберегти в базу</button>
@@ -69,7 +56,6 @@
     </table>
   </div>
 
-  <!-- ТАБ 2: Транспортні засоби -->
   <div id="tab-vehicles" class="tab-content">
     <h3>Додати транспортний засіб</h3>
     <form id="form-vehicles" class="form-container">
@@ -100,13 +86,12 @@
     </table>
   </div>
 
-  <!-- ТАБ 3: Паркувальні сесії -->
   <div id="tab-sessions" class="tab-content">
     <h3>Оформити паркувальну сесію</h3>
     <form id="form-sessions" class="form-container">
       <input type="text" id="ses-id" placeholder="ID талона (T-100)" required>
-      <select id="ses-spot" required><option value="" disabled selected>Завантаження...</option></select>
-      <select id="ses-plate" required><option value="" disabled selected>Завантаження...</option></select>
+      <select id="ses-spot" required></select>
+      <select id="ses-plate" required></select>
       <input type="time" id="ses-start" required>
       <input type="time" id="ses-end" required>
       <input type="number" id="ses-cost" placeholder="Сума (грн)" required>
